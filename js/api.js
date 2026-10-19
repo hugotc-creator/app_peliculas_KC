@@ -12,7 +12,8 @@
 
     return {
       search: (params) => get(core.searchParams(params), core.parseSearch),
-      detail: (id) => get(core.detailParams(id), core.parseDetail),
+      // raw: la respuesta original de OMDb, que es lo que se guarda en el catálogo.
+      detail: (id) => get(core.detailParams(id), (json) => ({ ...core.parseDetail(json), raw: json })),
     };
   };
 })(window.App = window.App || {});

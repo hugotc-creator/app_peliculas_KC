@@ -56,11 +56,14 @@
 
   const toSummary = (m) => ({ id: m.imdbID, title: m.Title, year: m.Year, poster: clean(m.Poster) });
 
-  const parseSearch = (json) => fromOmdb(json, (j) => ({
-    items: j.Search.map(toSummary),
-    total: Number(j.totalResults),
-    pages: Math.ceil(Number(j.totalResults) / PAGE_SIZE),
-  }));
+  // ---------- paginación (búsqueda OMDb y catálogo usan la misma forma) ----------
+  const toPage = (items, total) => ({ items, total, pages: Math.ceil(total / PAGE_SIZE) });
+  const pageRange = (page) => {
+    const from = (Math.max(1, Number(page) || 1) - 1) * PAGE_SIZE;
+    return { from, to: from + PAGE_SIZE - 1 };
+  };
+
+  const parseSearch = (json) => fromOmdb(json, (j) => toPage(j.Search.map(toSummary), Number(j.totalResults)));
 
   const parseDetail = (json) => fromOmdb(json, (j) => ({
     ...toSummary(j),
@@ -69,6 +72,33 @@
       .map(([label, key]) => ({ label, value: clean(j[key]) }))
       .filter((field) => field.value !== null),
   }));
+
+  // ---------- catálogo propio: filas de la tabla movies ----------
+  // Se guarda la respuesta completa de OMDb (omdb) y, aparte, las columnas para listar y filtrar.
+  const movieRow = (json) => ({
+    imdb_id: json.imdbID, title: json.Title, year: json.Year, poster: clean(json.Poster), omdb: json,
+  });
+  const rowToSummary = (row) => ({ id: row.imdb_id, title: row.title, year: row.year, poster: row.poster });
+
+  // Filtro y página en memoria (base local). Supabase hace lo mismo en el servidor.
+  const filterCatalog = (rows, { title, page }) => {
+    const q = String(title || '').trim().toLowerCase();
+    const matches = rows.filter((row) => row.title.toLowerCase().includes(q));
+    const { from, to } = pageRange(page);
+    return toPage(matches.slice(from, to + 1).map(rowToSummary), matches.length);
+  };
+
+  // ---------- importación en lote ----------
+  const IMPORT_PAGE_OPTIONS = [1, 3, 5, 10]; // cada página: 1 búsqueda + hasta 10 detalles en OMDb
+  const importPages = (value) => (IMPORT_PAGE_OPTIONS.includes(Number(value)) ? Number(value) : IMPORT_PAGE_OPTIONS[0]);
+  // log: [{ status: 'saved' | 'existing' | 'failed', ... }] -> { saved, existing, failed }
+  const tallyImport = (log) => log.reduce(
+    (counts, entry) => ({ ...counts, [entry.status]: counts[entry.status] + 1 }),
+    { saved: 0, existing: 0, failed: 0 },
+  );
+
+  // "Content-Range: 0-9/57" -> 57
+  const parseTotal = (contentRange) => Number(String(contentRange || '').split('/')[1]) || 0;
 
   // ---------- calificaciones ----------
   const average = (numbers) => (numbers.length ? numbers.reduce((a, b) => a + b, 0) / numbers.length : 0);
@@ -113,13 +143,17 @@
   };
   const searchHash = (params) => `#/search?${toQuery(params)}`;
   const movieHash = (id) => `#/movie/${encodeURIComponent(id)}`;
+  const catalogHash = (params) => `#/catalog?${toQuery(params)}`;
+  const importHash = (params) => `#/import?${toQuery(params)}`;
 
   App.core = {
     COMMENT_LIMITS, escapeHtml, toQuery,
     buildUrl, searchParams, detailParams, failure, parseSearch, parseDetail,
+    toPage, pageRange, movieRow, rowToSummary, filterCatalog, parseTotal,
+    IMPORT_PAGE_OPTIONS, importPages, tallyImport,
     average, isValidRating, starKinds,
     makeComment, validateComment,
     emptyRecord, addRating, addComment, summarize,
-    parseRoute, searchHash, movieHash,
+    parseRoute, searchHash, movieHash, catalogHash, importHash,
   };
 })(window.App = window.App || {});
