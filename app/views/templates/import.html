@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Importar{% endblock %}
+
+{% set labels = {'saved': ('Guardada', 'success'), 'existing': ('Ya estaba', 'secondary'), 'failed': ('Error', 'danger')} %}
+
+{% block content %}
+<h1 class="h3">Importar películas</h1>
+<p class="text-body-secondary">
+  Busca en OMDb y guarda todos los resultados en el catálogo. Las que ya están se saltan sin gastar peticiones.
+  Cada página son hasta 11 peticiones a OMDb (límite gratis: 1.000 al día). La importación puede tardar un minuto.
+</p>
+
+<form method="post" action="/import" class="row g-2 mb-4">
+  <div class="col-12 col-md">
+    <input class="form-control{% if form_error %} is-invalid{% endif %}" name="title" type="search"
+           placeholder="Título (p. ej. star wars)" value="{{ title }}" required>
+    {% if form_error %}<div class="invalid-feedback">{{ form_error }}</div>{% endif %}
+  </div>
+  <div class="col-6 col-md-2">
+    <input class="form-control" name="year" type="number" placeholder="Año" min="1888" max="2100" value="{{ year }}">
+  </div>
+  <div class="col-6 col-md-auto">
+    <select class="form-select" name="pages" aria-label="Páginas a importar">
+      {% for n in IMPORT_PAGE_OPTIONS %}
+        <option value="{{ n }}"{% if n == pages %} selected{% endif %}>{{ n }} página(s) · hasta {{ n * 10 }} películas</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-12 col-md-auto">
+    <button class="btn btn-warning w-100" type="submit">Importar</button>
+  </div>
+</form>
+
+{% if result %}
+  {% set t = tally %}
+  {% if result.error %}<div class="alert alert-danger">{{ result.error }}</div>{% endif %}
+  <div class="alert alert-secondary d-flex flex-wrap gap-3 align-items-center">
+    <strong>{{ 'Importación detenida' if result.error else 'Importación terminada' }}</strong>
+    <span>{{ t.saved }} nueva(s) · {{ t.existing }} ya estaban · {{ t.failed }} con error</span>
+    {% if t.saved + t.existing %}<a class="ms-auto link-warning" href="/catalog">Ver catálogo →</a>{% endif %}
+  </div>
+  <ul class="list-unstyled d-grid gap-1">
+    {% for entry in result.log %}
+      <li>
+        <span class="badge text-bg-{{ labels[entry.status][1] }} import-badge">{{ labels[entry.status][0] }}</span>
+        <a class="link-light" href="/movies/{{ entry.id }}">{{ entry.title }}</a>
+        <span class="text-body-secondary">({{ entry.year or '—' }})</span>
+        {% if entry.error %}<span class="text-body-secondary">— {{ entry.error }}</span>{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% endblock %}

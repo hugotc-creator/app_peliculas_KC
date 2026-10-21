@@ -1,0 +1,48 @@
+{# Piezas reutilizables. Jinja escapa todo el texto automáticamente. #}
+
+{% macro poster(src, title, class='') -%}
+  <img class="poster {{ class }}" src="{{ src or request.url_for('static', path='no-poster.svg') }}"
+       alt="Póster de {{ title }}" loading="lazy"
+       onerror="this.onerror=null;this.src='{{ request.url_for('static', path='no-poster.svg') }}'">
+{%- endmacro %}
+
+{% macro movie_card(m) %}
+  <div class="col">
+    <a class="card h-100 text-decoration-none movie-card" href="/movies/{{ m.id }}">
+      {{ poster(m.poster, m.title, 'card-img-top') }}
+      <div class="card-body p-2">
+        <h2 class="h6 card-title mb-1">{{ m.title }}</h2>
+        <span class="text-body-secondary small">{{ m.year or '' }}</span>
+      </div>
+    </a>
+  </div>
+{% endmacro %}
+
+{% macro results_grid(result) %}
+  <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
+    {% for m in result['items'] %}{{ movie_card(m) }}{% endfor %}
+  </div>
+{% endmacro %}
+
+{# Enlaces de página sobre la URL actual (conserva título, año y filtros). #}
+{% macro pagination(page, pages) %}
+  {% if pages > 1 %}
+  <nav aria-label="Paginación" class="mt-4">
+    <ul class="pagination justify-content-center">
+      <li class="page-item{% if page <= 1 %} disabled{% endif %}">
+        <a class="page-link" href="{{ request.url.include_query_params(page=page - 1) }}">← Anterior</a>
+      </li>
+      <li class="page-item disabled"><span class="page-link">Página {{ page }} de {{ pages }}</span></li>
+      <li class="page-item{% if page >= pages %} disabled{% endif %}">
+        <a class="page-link" href="{{ request.url.include_query_params(page=page + 1) }}">Siguiente →</a>
+      </li>
+    </ul>
+  </nav>
+  {% endif %}
+{% endmacro %}
+
+{% macro stars(kinds, average) -%}
+  <span class="stars" role="img" aria-label="{{ '%.1f'|format(average) }} de 5 estrellas">
+    {%- for kind in kinds %}<span class="star star--{{ kind }}">★</span>{% endfor -%}
+  </span>
+{%- endmacro %}

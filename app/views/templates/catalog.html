@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_macros.html" import results_grid, pagination with context %}
+{% block title %}Catálogo{% endblock %}
+
+{% block content %}
+<h1 class="h3">Catálogo</h1>
+<p class="text-body-secondary">Películas guardadas en nuestra base de datos (SQLite).</p>
+
+<form method="get" action="/catalog" class="row g-2 mb-4" role="search">
+  <div class="col">
+    <input class="form-control" name="title" type="search" placeholder="Filtrar por título" value="{{ title }}">
+  </div>
+  <div class="col-auto">
+    <button class="btn btn-warning" type="submit">Filtrar</button>
+  </div>
+</form>
+
+{% if result['total'] == 0 %}
+  <div class="alert alert-secondary" role="status">
+    {% if title %}Ninguna película del catálogo coincide con ese título.
+    {% else %}El catálogo está vacío: abre el detalle de cualquier película y se guardará aquí.{% endif %}
+  </div>
+{% else %}
+  <p class="text-body-secondary">{{ result['total'] }} película(s)</p>
+  {{ results_grid(result) }}
+  {{ pagination(result['page'], result['pages']) }}
+{% endif %}
+{% endblock %}

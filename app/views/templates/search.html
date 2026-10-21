@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_macros.html" import results_grid, pagination with context %}
+{% block title %}Buscar{% endblock %}
+
+{% block content %}
+<form method="get" action="/" class="row g-2 mb-4" role="search">
+  <div class="col-12 col-md">
+    <input class="form-control form-control-lg" name="title" type="search" placeholder="Título de la película"
+           value="{{ title }}" required autofocus>
+  </div>
+  <div class="col-6 col-md-2">
+    <input class="form-control form-control-lg" name="year" type="number" placeholder="Año" min="1888" max="2100" value="{{ year }}">
+  </div>
+  <div class="col-6 col-md-auto">
+    <button class="btn btn-warning btn-lg w-100" type="submit">Buscar</button>
+  </div>
+</form>
+
+{% if error %}
+  <div class="alert alert-danger" role="alert">{{ error }}</div>
+{% elif result %}
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <span class="text-body-secondary">{{ result['total'] }} resultado(s)</span>
+    <a class="btn btn-outline-warning btn-sm" href="/import?title={{ title|urlencode }}&year={{ year|urlencode }}">
+      Importar estos resultados al catálogo
+    </a>
+  </div>
+  {{ results_grid(result) }}
+  {{ pagination(result['page'], result['pages']) }}
+{% else %}
+  <div class="alert alert-secondary" role="status">Busca una película por título y, si quieres, por año.</div>
+{% endif %}
+{% endblock %}

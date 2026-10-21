@@ -1,0 +1,27 @@
+/* Lo que Bootstrap no trae: pósters, estrellas de promedio y estrellas para votar. */
+.poster { aspect-ratio: 2 / 3; object-fit: cover; background: var(--bs-secondary-bg); }
+.movie-card { transition: transform .15s ease, box-shadow .15s ease; }
+.movie-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0, 0, 0, .4); }
+
+.stars { font-size: 2rem; letter-spacing: 2px; line-height: 1; }
+.star--full { color: var(--bs-warning); }
+.star--empty { color: var(--bs-secondary-bg); }
+.star--half {
+  background: linear-gradient(90deg, var(--bs-warning) 50%, var(--bs-secondary-bg) 50%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.rate { display: inline-flex; flex-direction: row-reverse; }
+.rate__star {
+  background: none; border: none; padding: 0 4px;
+  font-size: 2rem; color: var(--bs-secondary-bg); line-height: 1; cursor: pointer;
+}
+.rate__star:hover,
+.rate__star:hover ~ .rate__star,
+.rate__star:focus-visible,
+.rate__star:focus-visible ~ .rate__star { color: var(--bs-warning); }
+
+.comment-body { white-space: pre-wrap; overflow-wrap: anywhere; }
+.import-badge { display: inline-block; min-width: 5.5rem; }
