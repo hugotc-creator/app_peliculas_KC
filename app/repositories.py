@@ -48,11 +48,14 @@ class MovieRepository:
     def count(self) -> int:
         return self.db.scalar(select(func.count()).select_from(Movie)) or 0
 
-    def list(self, title: str = "", page=1) -> dict:
-        """Catálogo filtrado por título, más reciente primero, en páginas de PAGE_SIZE."""
+    def list(self, title: str = "", year: str = "", page=1) -> dict:
+        """Catálogo filtrado por título y/o año, más reciente primero, en páginas de PAGE_SIZE."""
         query = select(Movie)
         if title.strip():
             query = query.where(Movie.title.ilike(_like_pattern(title.strip()), escape="\\"))
+        if year.strip():
+            # OMDb guarda "1999" o, en series, "1999–2003": basta con que empiece por el año.
+            query = query.where(Movie.year.like(f"{year.strip()}%"))
         total = self.db.scalar(select(func.count()).select_from(query.subquery())) or 0
         rows = self.db.scalars(
             query.order_by(Movie.created_at.desc(), Movie.imdb_id).offset(core.page_offset(page)).limit(core.PAGE_SIZE)

@@ -114,6 +114,21 @@ def test_catalog_lists_filters_and_paginates(client, session_factory):
     assert "Ninguna película del catálogo" in client.get("/catalog", params={"title": "zzz"}).text
 
 
+def test_catalog_filters_by_year_alone_or_combined(client, session_factory):
+    repo = MovieRepository(session_factory())
+    repo.save_from_omdb({"imdbID": "tt1", "Title": "Batman", "Year": "1989", "Poster": "N/A"})
+    repo.save_from_omdb({"imdbID": "tt2", "Title": "Batman Returns", "Year": "1992", "Poster": "N/A"})
+    repo.save_from_omdb({"imdbID": "tt3", "Title": "Alien", "Year": "1992", "Poster": "N/A"})
+
+    by_year = client.get("/catalog", params={"year": "1992"})
+    assert "2 película(s)" in by_year.text and "Batman Returns" in by_year.text and "Alien" in by_year.text
+
+    combined = client.get("/catalog", params={"title": "batman", "year": "1992"})
+    assert "1 película(s)" in combined.text and "Batman Returns" in combined.text
+
+    assert "Ninguna película del catálogo" in client.get("/catalog", params={"year": "1900"}).text
+
+
 def test_empty_catalog_message(client):
     assert "El catálogo está vacío" in client.get("/catalog").text
 

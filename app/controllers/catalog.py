@@ -10,6 +10,8 @@ router = APIRouter()
 
 
 @router.get("/catalog", response_class=HTMLResponse)
-def catalog(request: Request, title: str = "", page: int = Query(1, ge=1), db: Session = Depends(get_db)):
-    result = MovieRepository(db).list(title, page)
-    return render(request, "catalog.html", active="catalog", title=title, result=result)
+def catalog(
+    request: Request, title: str = "", year: str = "", page: int = Query(1, ge=1), db: Session = Depends(get_db),
+):
+    result = MovieRepository(db).list(title, year, page)
+    return render(request, "catalog.html", active="catalog", title=title, year=year, result=result)

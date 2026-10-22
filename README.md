@@ -29,7 +29,7 @@ Abre http://localhost:8000. La base `peliculas.db` se crea sola en la primera ej
 | `/movies/{imdb_id}` | Detalle. Se lee de nuestra base; si no está, se trae de OMDb y se guarda |
 | `POST /movies/{id}/comments` | Publicar un comentario (validado en el servidor) |
 | `POST /movies/{id}/ratings` | Votar de 1 a 5; el promedio se muestra en estrellas |
-| `/catalog` | Catálogo de películas guardadas, con filtro por título y paginación |
+| `/catalog` | Catálogo de películas guardadas, con filtro por título y/o año (el año solo también vale) y paginación |
 | `/import` | Importación en lote de los resultados de una búsqueda (1 a 10 páginas) |
 
 ## Arquitectura (MVC)

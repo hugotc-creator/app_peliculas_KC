@@ -51,11 +51,15 @@ class OmdbClient:
         query.update({key: value for key, value in params.items() if value not in (None, "")})
         try:
             response = self._http.get(self._settings.omdb_base_url, params=query)
-            response.raise_for_status()
-            data = response.json()
         except httpx.HTTPError as exc:
             raise OmdbError("No se pudo conectar con OMDb. Inténtalo de nuevo en unos minutos.") from exc
+        # OMDb explica sus errores en el JSON incluso con HTTP 401 (clave inválida, cuota agotada):
+        # se lee antes de mirar el código de estado.
+        try:
+            data = response.json()
         except ValueError as exc:
+            if response.status_code >= 400:
+                raise OmdbError(f"OMDb respondió con un error HTTP {response.status_code}.") from exc
             raise OmdbError("OMDb devolvió una respuesta que no se pudo leer.") from exc
 
         if data.get("Response") != "True":
