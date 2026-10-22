@@ -2,7 +2,9 @@
 
 Aplicación web para buscar películas por título y año, ver su detalle, comentarlas y calificarlas de 1 a 5 estrellas (promedio en estrellas). Las películas consultadas se guardan en una base de datos propia (catálogo).
 
-**Stack:** FastAPI · SQLite (SQLAlchemy) · Bootstrap 5 · Jinja2 · API externa [OMDb](https://www.omdbapi.com/) · patrón MVC.
+**Stack:** FastAPI · SQLite (SQLAlchemy) · Bootstrap 5 + Bootstrap Icons · Jinja2 · API externa [OMDb](https://www.omdbapi.com/) · patrón MVC.
+
+El diseño (cabecera amarilla, títulos con barra lateral, pósters con sombra y pie oscuro) está inspirado en portales de cine como SensaCine y se define en `app/static/styles.css` sobre los componentes de Bootstrap.
 
 ## Puesta en marcha
 Requiere Python 3.11 o superior.

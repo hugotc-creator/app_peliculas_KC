@@ -1,27 +1,105 @@
-/* Lo que Bootstrap no trae: pósters, estrellas de promedio y estrellas para votar. */
-.poster { aspect-ratio: 2 / 3; object-fit: cover; background: var(--bs-secondary-bg); }
-.movie-card { transition: transform .15s ease, box-shadow .15s ease; }
-.movie-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0, 0, 0, .4); }
-
-.stars { font-size: 2rem; letter-spacing: 2px; line-height: 1; }
-.star--full { color: var(--bs-warning); }
-.star--empty { color: var(--bs-secondary-bg); }
-.star--half {
-  background: linear-gradient(90deg, var(--bs-warning) 50%, var(--bs-secondary-bg) 50%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* Tema CineBusca sobre Bootstrap: cabecera amarilla, fondo claro, títulos con barra amarilla, pósters con sombra. */
+:root {
+  --sc-yellow: #fecc00;
+  --sc-yellow-dark: #e6b800;
+  --sc-dark: #1b1b1b;
+  --sc-bg: #f0f0f0;
+  --sc-text: #1c1c1c;
+  --sc-muted: #6f6f6f;
+  --sc-line: #e3e3e3;
+  --bs-body-font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bs-body-color: var(--sc-text);
+  --bs-body-bg: var(--sc-bg);
+  --bs-link-color-rgb: 28, 28, 28;
+  --bs-link-hover-color-rgb: 0, 0, 0;
 }
+body { background: var(--sc-bg); color: var(--sc-text); }
+.container { max-width: 1140px; }
+.sc-content { background: #fff; padding: 1.75rem 1.5rem 2.5rem; min-height: 60vh; }
+@media (min-width: 768px) { .sc-content { padding: 2.25rem 2.5rem 3rem; } }
 
+/* ---------- cabecera ---------- */
+.sc-navbar { background: var(--sc-yellow); padding: .35rem 0; }
+.sc-brand { font-weight: 800; font-size: 1.5rem; letter-spacing: -.5px; text-transform: uppercase; color: #111 !important; }
+.sc-brand .bi { font-size: 1.2em; vertical-align: -.1em; }
+.sc-nav .nav-link { color: #111; font-weight: 700; text-transform: uppercase; font-size: .82rem; letter-spacing: .6px; padding: .8rem 1rem; }
+.sc-nav .nav-link:hover, .sc-nav .nav-link.active { color: #111; box-shadow: inset 0 -3px 0 #111; }
+.sc-icon-link { color: #111; font-size: 1.25rem; padding: .25rem .5rem; }
+.navbar-toggler { border-color: rgba(0, 0, 0, .3); }
+
+/* ---------- títulos y botones ---------- */
+.section-title { font-weight: 800; font-size: 1.5rem; line-height: 1.1; border-left: 6px solid var(--sc-yellow); padding-left: .6rem; margin: 0 0 1.25rem; }
+.section-title small { font-weight: 600; font-size: .9rem; color: var(--sc-muted); display: block; margin-top: .25rem; }
+.btn-sc { background: var(--sc-yellow); color: #111; font-weight: 700; border: 0; border-radius: 999px; padding: .6rem 1.5rem; }
+.btn-sc:hover, .btn-sc:focus { background: var(--sc-yellow-dark); color: #111; }
+.btn-sc-outline { background: #fff; color: #111; font-weight: 600; border: 2px solid #111; border-radius: 999px; padding: .45rem 1.25rem; }
+.btn-sc-outline:hover { background: #111; color: #fff; }
+.form-control, .form-select { border-radius: .6rem; border-color: #d9d9d9; padding: .65rem .9rem; }
+.form-control:focus, .form-select:focus { border-color: var(--sc-yellow); box-shadow: 0 0 0 .25rem rgba(254, 204, 0, .35); }
+.sc-box { background: var(--sc-bg); border-radius: 1rem; padding: 1.25rem; }
+
+/* ---------- portada (hero de búsqueda) ---------- */
+.sc-hero { background: radial-gradient(ellipse at top left, #3a3a3a, var(--sc-dark) 60%); color: #fff; }
+.sc-hero h1 { font-weight: 800; font-size: clamp(1.8rem, 4vw, 2.8rem); letter-spacing: -.5px; }
+.sc-hero p { color: #cfcfcf; }
+.sc-hero .form-control { border: 0; padding: .9rem 1.1rem; font-size: 1.05rem; }
+
+/* ---------- tarjetas de película ---------- */
+.movie-card { color: var(--sc-text); }
+.movie-card .poster-wrap { position: relative; }
+.poster { aspect-ratio: 2 / 3; object-fit: cover; background: #e9e9e9; border-radius: .6rem; box-shadow: 0 2px 8px rgba(0, 0, 0, .15); transition: transform .15s ease, box-shadow .15s ease; }
+.movie-card:hover .poster { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0, 0, 0, .25); }
+.movie-card .card-title { font-weight: 700; font-size: .95rem; line-height: 1.25; margin: .6rem 0 .15rem; }
+.movie-card .card-sub { color: var(--sc-muted); font-size: .8rem; }
+.rating-badge { position: absolute; top: .5rem; left: .5rem; background: var(--sc-yellow); color: #111; font-weight: 700; font-size: .75rem; border-radius: .4rem; padding: .15rem .45rem; box-shadow: 0 1px 4px rgba(0, 0, 0, .3); }
+
+/* ---------- paginación ---------- */
+.pagination { gap: .4rem; }
+.pagination .page-link { color: #111; font-weight: 600; border: 2px solid var(--sc-line); border-radius: 999px; padding: .45rem 1rem; }
+.pagination .page-link:hover { background: var(--sc-yellow); border-color: var(--sc-yellow); color: #111; }
+.pagination .page-item.disabled .page-link { color: #aaa; background: #fff; border-color: var(--sc-line); }
+.pagination .page-item.is-label .page-link { border: 0; color: var(--sc-muted); font-weight: 600; }
+
+/* ---------- detalle ---------- */
+.detail-hero { position: relative; background: var(--sc-dark); color: #fff; overflow: hidden; }
+.detail-hero__bg { position: absolute; inset: -40px; background-size: cover; background-position: center 20%; filter: blur(28px) brightness(.45); opacity: .9; }
+.detail-hero .container { position: relative; }
+.detail-hero h1 { font-weight: 800; font-size: clamp(1.6rem, 3.5vw, 2.6rem); letter-spacing: -.5px; margin-bottom: .25rem; }
+.detail-hero .poster { box-shadow: 0 10px 30px rgba(0, 0, 0, .5); }
+.detail-hero .meta { color: #d8d8d8; font-size: .95rem; }
+.detail-hero .meta strong { color: #fff; }
+.detail-hero .meta .sep { margin: 0 .45rem; color: #888; }
+.imdb-badge { display: inline-flex; align-items: center; gap: .35rem; background: var(--sc-yellow); color: #111; font-weight: 800; border-radius: .4rem; padding: .25rem .6rem; }
+.source-badge { font-weight: 600; font-size: .8rem; border-radius: 999px; padding: .3rem .8rem; }
+.source-badge--db { background: #d8f5e3; color: #146c43; }
+.source-badge--omdb { background: #fff2b3; color: #6b5300; }
+.plot { font-size: 1.05rem; line-height: 1.7; }
+.fields dt { color: var(--sc-muted); font-weight: 600; }
+.fields dd { margin-bottom: .5rem; }
+
+/* ---------- estrellas (promedio) ---------- */
+.stars .bi { font-size: 1.7rem; color: var(--sc-yellow); letter-spacing: 2px; }
+.stars .star--empty { color: #d9d9d9; }
+.rating-value { font-weight: 800; font-size: 1.6rem; }
+
+/* ---------- estrellas (votar): orden 5..1 + row-reverse, el hover ilumina las anteriores ---------- */
 .rate { display: inline-flex; flex-direction: row-reverse; }
-.rate__star {
-  background: none; border: none; padding: 0 4px;
-  font-size: 2rem; color: var(--bs-secondary-bg); line-height: 1; cursor: pointer;
-}
-.rate__star:hover,
-.rate__star:hover ~ .rate__star,
-.rate__star:focus-visible,
-.rate__star:focus-visible ~ .rate__star { color: var(--bs-warning); }
+.rate__star { background: none; border: 0; padding: 0 3px; font-size: 1.9rem; color: #d9d9d9; line-height: 1; cursor: pointer; transition: color .1s, transform .1s; }
+.rate__star:hover, .rate__star:hover ~ .rate__star,
+.rate__star:focus-visible, .rate__star:focus-visible ~ .rate__star { color: var(--sc-yellow); }
+.rate__star:hover { transform: scale(1.15); }
 
-.comment-body { white-space: pre-wrap; overflow-wrap: anywhere; }
-.import-badge { display: inline-block; min-width: 5.5rem; }
+/* ---------- comentarios ---------- */
+.comment { display: flex; gap: .9rem; padding: 1rem 0; border-top: 1px solid var(--sc-line); }
+.comment-avatar { flex: 0 0 42px; width: 42px; height: 42px; border-radius: 50%; background: var(--sc-yellow); color: #111; font-weight: 800; display: flex; align-items: center; justify-content: center; text-transform: uppercase; }
+.comment-body { white-space: pre-wrap; overflow-wrap: anywhere; margin: .2rem 0 0; }
+
+/* ---------- importación ---------- */
+.import-badge { display: inline-block; min-width: 5.5rem; font-weight: 700; }
+
+/* ---------- error y pie ---------- */
+.sc-error > .bi { font-size: 7rem; color: #d9d9d9; }
+.sc-error .code { font-weight: 800; font-size: 3rem; }
+.sc-footer { background: var(--sc-dark); color: #bdbdbd; }
+.sc-footer a { color: var(--sc-yellow); text-decoration: none; }
+.sc-brand--footer { color: #fff !important; font-size: 1.2rem; }

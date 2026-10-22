@@ -2,32 +2,56 @@
 {% from "_macros.html" import results_grid, pagination with context %}
 {% block title %}Buscar{% endblock %}
 
-{% block content %}
-<form method="get" action="/" class="row g-2 mb-4" role="search">
-  <div class="col-12 col-md">
-    <input class="form-control form-control-lg" name="title" type="search" placeholder="Título de la película"
-           value="{{ title }}" required autofocus>
+{% block hero %}
+<section class="sc-hero">
+  <div class="container py-5">
+    <h1>Encuentra tu película</h1>
+    <p class="mb-4">Busca por título y, si quieres, por año. Cada ficha que abras se guarda en nuestro catálogo.</p>
+    <form method="get" action="/" class="row g-2" role="search">
+      <div class="col-12 col-md">
+        <input class="form-control" name="title" type="search" placeholder="Título de la película" value="{{ title }}" required autofocus>
+      </div>
+      <div class="col-7 col-md-2">
+        <input class="form-control" name="year" type="number" placeholder="Año" min="1888" max="2100" value="{{ year }}">
+      </div>
+      <div class="col-5 col-md-auto">
+        <button class="btn btn-sc w-100 py-3" type="submit"><i class="bi bi-search"></i> Buscar</button>
+      </div>
+    </form>
   </div>
-  <div class="col-6 col-md-2">
-    <input class="form-control form-control-lg" name="year" type="number" placeholder="Año" min="1888" max="2100" value="{{ year }}">
-  </div>
-  <div class="col-6 col-md-auto">
-    <button class="btn btn-warning btn-lg w-100" type="submit">Buscar</button>
-  </div>
-</form>
+</section>
+{% endblock %}
 
+{% block content %}
 {% if error %}
-  <div class="alert alert-danger" role="alert">{{ error }}</div>
+  <h2 class="section-title">Resultados para «{{ title }}»</h2>
+  <div class="alert alert-warning" role="alert"><i class="bi bi-exclamation-triangle"></i> {{ error }}</div>
 {% elif result %}
-  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-    <span class="text-body-secondary">{{ result['total'] }} resultado(s)</span>
-    <a class="btn btn-outline-warning btn-sm" href="/import?title={{ title|urlencode }}&year={{ year|urlencode }}">
-      Importar estos resultados al catálogo
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-2">
+    <h2 class="section-title">Resultados para «{{ title }}»{% if year %} ({{ year }}){% endif %}
+      <small>{{ result['total'] }} película(s) en OMDb</small>
+    </h2>
+    <a class="btn btn-sc-outline" href="/import?title={{ title|urlencode }}&year={{ year|urlencode }}">
+      <i class="bi bi-download"></i> Importar estos resultados al catálogo
     </a>
   </div>
   {{ results_grid(result) }}
   {{ pagination(result['page'], result['pages']) }}
 {% else %}
-  <div class="alert alert-secondary" role="status">Busca una película por título y, si quieres, por año.</div>
+  <h2 class="section-title">Empieza por aquí</h2>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="sc-box h-100"><i class="bi bi-search fs-2"></i>
+        <h3 class="h6 fw-bold mt-2">Busca</h3><p class="mb-0 small">Escribe un título arriba. Si quieres acotar, añade el año.</p></div>
+    </div>
+    <div class="col-md-4">
+      <div class="sc-box h-100"><i class="bi bi-collection-play fs-2"></i>
+        <h3 class="h6 fw-bold mt-2">Explora el catálogo</h3><p class="mb-0 small">Miles de películas ya guardadas, filtrables por título o año. <a href="/catalog">Ver catálogo</a>.</p></div>
+    </div>
+    <div class="col-md-4">
+      <div class="sc-box h-100"><i class="bi bi-chat-square-heart fs-2"></i>
+        <h3 class="h6 fw-bold mt-2">Opina</h3><p class="mb-0 small">En cada ficha puedes comentar y calificar de 1 a 5 estrellas.</p></div>
+    </div>
+  </div>
 {% endif %}
 {% endblock %}

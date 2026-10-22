@@ -16,7 +16,11 @@ def _like_pattern(text: str) -> str:
 
 
 def movie_summary(movie: Movie) -> dict:
-    return {"id": movie.imdb_id, "title": movie.title, "year": movie.year, "poster": movie.poster}
+    """Resumen para las tarjetas; director y nota IMDb salen de la ficha guardada."""
+    return {
+        "id": movie.imdb_id, "title": movie.title, "year": movie.year, "poster": movie.poster,
+        "director": core.clean(movie.omdb.get("Director")), "rating": core.clean(movie.omdb.get("imdbRating")),
+    }
 
 
 class MovieRepository:

@@ -1,30 +1,48 @@
 <!doctype html>
-<html lang="es" data-bs-theme="dark">
+<html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}CineBusca{% endblock %} · CineBusca</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ request.url_for('static', path='styles.css') }}">
 </head>
 <body class="d-flex flex-column min-vh-100">
-  <nav class="navbar navbar-expand bg-body-tertiary border-bottom">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="/">🎬 CineBusca</a>
-      <ul class="navbar-nav">
-        <li class="nav-item"><a class="nav-link{% if active == 'search' %} active{% endif %}" href="/">Buscar</a></li>
-        <li class="nav-item"><a class="nav-link{% if active == 'catalog' %} active{% endif %}" href="/catalog">Catálogo</a></li>
-        <li class="nav-item"><a class="nav-link{% if active == 'import' %} active{% endif %}" href="/import">Importar</a></li>
-      </ul>
-    </div>
-  </nav>
+  <header class="sc-header">
+    <nav class="navbar navbar-expand-md sc-navbar">
+      <div class="container">
+        <a class="navbar-brand sc-brand" href="/"><i class="bi bi-ticket-perforated-fill"></i> CineBusca</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Menú">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav">
+          <ul class="navbar-nav sc-nav mx-auto">
+            <li class="nav-item"><a class="nav-link{% if active == 'search' %} active{% endif %}" href="/">Buscar</a></li>
+            <li class="nav-item"><a class="nav-link{% if active == 'catalog' %} active{% endif %}" href="/catalog">Catálogo</a></li>
+            <li class="nav-item"><a class="nav-link{% if active == 'import' %} active{% endif %}" href="/import">Importar</a></li>
+          </ul>
+          <a class="sc-icon-link" href="/" aria-label="Buscar"><i class="bi bi-search"></i></a>
+        </div>
+      </div>
+    </nav>
+  </header>
 
-  <main class="container py-4 flex-grow-1">
-    {% block content %}{% endblock %}
+  {% block hero %}{% endblock %}
+
+  <main class="flex-grow-1">
+    <div class="container sc-content">
+      {% block content %}{% endblock %}
+    </div>
   </main>
 
-  <footer class="text-center text-body-secondary py-3 small border-top">
-    Datos de películas: <a href="https://www.omdbapi.com/" target="_blank" rel="noopener">OMDb API</a>
+  <footer class="sc-footer">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2 py-4">
+      <span class="sc-brand sc-brand--footer"><i class="bi bi-ticket-perforated-fill"></i> CineBusca</span>
+      <span class="small">Datos de películas: <a href="https://www.omdbapi.com/" target="_blank" rel="noopener">OMDb API</a></span>
+    </div>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

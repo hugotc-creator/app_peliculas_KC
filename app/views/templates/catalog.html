@@ -3,18 +3,19 @@
 {% block title %}Catálogo{% endblock %}
 
 {% block content %}
-<h1 class="h3">Catálogo</h1>
-<p class="text-body-secondary">Películas guardadas en nuestra base de datos (SQLite).</p>
+<h1 class="section-title">Catálogo
+  <small>Películas guardadas en nuestra base de datos</small>
+</h1>
 
-<form method="get" action="/catalog" class="row g-2 mb-4" role="search">
+<form method="get" action="/catalog" class="sc-box row g-2 mb-4 mx-0" role="search">
   <div class="col-12 col-md">
     <input class="form-control" name="title" type="search" placeholder="Filtrar por título" value="{{ title }}">
   </div>
-  <div class="col-6 col-md-2">
+  <div class="col-7 col-md-2">
     <input class="form-control" name="year" type="number" placeholder="Año" min="1888" max="2100" value="{{ year }}">
   </div>
-  <div class="col-6 col-md-auto">
-    <button class="btn btn-warning w-100" type="submit">Filtrar</button>
+  <div class="col-5 col-md-auto">
+    <button class="btn btn-sc w-100" type="submit"><i class="bi bi-funnel"></i> Filtrar</button>
   </div>
 </form>
 
@@ -24,7 +25,7 @@
     {% else %}El catálogo está vacío: abre el detalle de cualquier película y se guardará aquí.{% endif %}
   </div>
 {% else %}
-  <p class="text-body-secondary">{{ result['total'] }} película(s)</p>
+  <p class="text-secondary">{{ result['total'] }} película(s)</p>
   {{ results_grid(result) }}
   {{ pagination(result['page'], result['pages']) }}
 {% endif %}

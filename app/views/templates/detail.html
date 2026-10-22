@@ -2,85 +2,118 @@
 {% from "_macros.html" import poster, stars with context %}
 {% block title %}{{ movie.title }}{% endblock %}
 
-{% set source_labels = {
-  'db': ('Leída de nuestra base de datos', 'success'),
-  'omdb': ('Traída de OMDb y guardada en el catálogo', 'info'),
-} %}
+{# Ficha como diccionario etiqueta -> valor, para sacar algunos datos a la cabecera. #}
+{% set f = {} %}
+{% for field in movie.fields %}{% set _ = f.update({field.label: field.value}) %}{% endfor %}
+
+{% block hero %}
+<section class="detail-hero">
+  {% if movie.poster %}<div class="detail-hero__bg" style="background-image: url('{{ movie.poster }}')"></div>{% endif %}
+  <div class="container py-4 py-md-5">
+    <div class="row g-4 align-items-center">
+      <div class="col-5 col-sm-4 col-md-3">{{ poster(movie.poster, movie.title, 'w-100') }}</div>
+      <div class="col-7 col-sm-8 col-md-9">
+        <div class="mb-2">
+          <a href="{{ back }}" class="link-light text-decoration-none small"><i class="bi bi-arrow-left"></i> Volver</a>
+        </div>
+        <h1>{{ movie.title }}</h1>
+        <p class="meta mb-2">
+          {{ movie.year or '—' }}
+          {% if f['Duración'] %}<span class="sep">·</span>{{ f['Duración'] }}{% endif %}
+          {% if f['Género'] %}<span class="sep">·</span>{{ f['Género'] }}{% endif %}
+        </p>
+        {% if f['Director'] %}<p class="meta mb-1">De <strong>{{ f['Director'] }}</strong></p>{% endif %}
+        {% if f['Reparto'] %}<p class="meta mb-3">Con <strong>{{ f['Reparto'] }}</strong></p>{% endif %}
+        <div class="d-flex flex-wrap align-items-center gap-2">
+          {% if f['Nota IMDb'] %}<span class="imdb-badge"><i class="bi bi-star-fill"></i> {{ f['Nota IMDb'] }} <span class="fw-normal small">IMDb</span></span>{% endif %}
+          <span class="source-badge source-badge--{{ source }}">
+            {% if source == 'db' %}Leída de nuestra base de datos{% else %}Traída de OMDb y guardada en el catálogo{% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
 
 {% block content %}
-<div class="d-flex align-items-center gap-3 mb-3">
-  <a href="{{ back }}" class="link-warning">← Volver</a>
-  <span class="badge text-bg-{{ source_labels[source][1] }}">{{ source_labels[source][0] }}</span>
-</div>
-
-<article class="row g-4 mb-4">
-  <div class="col-md-4 col-lg-3">{{ poster(movie.poster, movie.title, 'img-fluid rounded w-100') }}</div>
-  <div class="col-md-8 col-lg-9">
-    <h1>{{ movie.title }} <small class="text-body-secondary fs-4">({{ movie.year or '—' }})</small></h1>
-    {% if movie.plot %}<p class="lead">{{ movie.plot }}</p>{% endif %}
-    <dl class="row mb-0">
+<div class="row g-5">
+  <div class="col-lg-7">
+    {% if movie.plot %}
+      <h2 class="section-title">Sinopsis</h2>
+      <p class="plot">{{ movie.plot }}</p>
+    {% endif %}
+  </div>
+  <div class="col-lg-5">
+    <h2 class="section-title">Ficha</h2>
+    <dl class="row fields mb-0">
       {% for field in movie.fields %}
-        <dt class="col-sm-3 text-body-secondary fw-normal">{{ field.label }}</dt>
-        <dd class="col-sm-9">{{ field.value }}</dd>
+        <dt class="col-5">{{ field.label }}</dt>
+        <dd class="col-7">{{ field.value }}</dd>
       {% endfor %}
     </dl>
   </div>
-</article>
+</div>
 
-<section id="rating" class="card mb-4">
-  <div class="card-body">
-    <h2 class="h5 card-title">Calificación de los usuarios</h2>
-    <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
-      {{ stars(summary.stars, summary.average) }}
-      <span class="fs-4 fw-bold">{{ '%.1f'|format(summary.average) }} / 5</span>
-      <span class="text-body-secondary">({{ summary.count }} voto(s))</span>
-    </div>
-    {% if ok == 'rating' %}<div class="alert alert-success py-2">¡Gracias por tu voto!</div>{% endif %}
-    {% if rating_error %}<div class="alert alert-danger py-2">{{ rating_error }}</div>{% endif %}
-    <p class="text-body-secondary mb-1">Tu calificación:</p>
-    {# Orden 5..1 + flex row-reverse: el hover ilumina la estrella y las anteriores solo con CSS. #}
-    <form method="post" action="/movies/{{ movie.id }}/ratings" class="rate" role="group" aria-label="Califica de 1 a 5">
-      {% for n in [5, 4, 3, 2, 1] %}
-        <button type="submit" name="value" value="{{ n }}" class="rate__star" title="{{ n }} de 5" aria-label="{{ n }} de 5">★</button>
-      {% endfor %}
-    </form>
+<hr class="my-5">
+
+<section id="rating">
+  <h2 class="section-title">Calificación de los usuarios</h2>
+  <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
+    {{ stars(summary.stars, summary.average) }}
+    <span class="rating-value">{{ '%.1f'|format(summary.average) }} / 5</span>
+    <span class="text-secondary">({{ summary.count }} voto(s))</span>
   </div>
+  {% if ok == 'rating' %}<div class="alert alert-success py-2"><i class="bi bi-check-circle"></i> ¡Gracias por tu voto!</div>{% endif %}
+  {% if rating_error %}<div class="alert alert-danger py-2">{{ rating_error }}</div>{% endif %}
+  <p class="text-secondary mb-1 small fw-semibold">TU CALIFICACIÓN</p>
+  {# Orden 5..1 + flex row-reverse: el hover ilumina la estrella y las anteriores solo con CSS. #}
+  <form method="post" action="/movies/{{ movie.id }}/ratings" class="rate" role="group" aria-label="Califica de 1 a 5">
+    {% for n in [5, 4, 3, 2, 1] %}
+      <button type="submit" name="value" value="{{ n }}" class="rate__star" title="{{ n }} de 5" aria-label="{{ n }} de 5"><i class="bi bi-star-fill"></i></button>
+    {% endfor %}
+  </form>
 </section>
 
-<section id="comments" class="card">
-  <div class="card-body">
-    <h2 class="h5 card-title">Comentarios</h2>
-    {% if ok == 'comment' %}<div class="alert alert-success py-2">Comentario publicado.</div>{% endif %}
-    <form method="post" action="/movies/{{ movie.id }}/comments" class="mb-4">
-      <div class="mb-2">
+<hr class="my-5">
+
+<section id="comments">
+  <h2 class="section-title">Comentarios <small>{{ summary.comments|length }} opinión(es)</small></h2>
+  {% if ok == 'comment' %}<div class="alert alert-success py-2"><i class="bi bi-check-circle"></i> Comentario publicado.</div>{% endif %}
+  <form method="post" action="/movies/{{ movie.id }}/comments" class="sc-box mb-4">
+    <div class="row g-2">
+      <div class="col-md-4">
         <input class="form-control" name="author" maxlength="{{ COMMENT_LIMITS.author }}" placeholder="Tu nombre (opcional)"
                value="{{ form.author if form else '' }}">
       </div>
-      <div class="mb-2">
+      <div class="col-md-8">
         <textarea class="form-control{% if comment_errors %} is-invalid{% endif %}" name="text" rows="3"
-                  maxlength="{{ COMMENT_LIMITS.text }}" placeholder="Escribe tu comentario…" required>{{ form.text if form else '' }}</textarea>
+                  maxlength="{{ COMMENT_LIMITS.text }}" placeholder="¿Qué te ha parecido la película?" required>{{ form.text if form else '' }}</textarea>
         {% if comment_errors %}
           <div class="invalid-feedback d-block">{% for e in comment_errors %}{{ e }}<br>{% endfor %}</div>
         {% endif %}
       </div>
-      <button class="btn btn-warning" type="submit">Publicar comentario</button>
-    </form>
+      <div class="col-12 text-end">
+        <button class="btn btn-sc" type="submit"><i class="bi bi-chat-dots"></i> Publicar comentario</button>
+      </div>
+    </div>
+  </form>
 
-    {% if summary.comments %}
-      <ul class="list-group list-group-flush">
-        {% for c in summary.comments %}
-          <li class="list-group-item px-0">
-            <div class="d-flex justify-content-between flex-wrap gap-2">
-              <strong>{{ c.author }}</strong>
-              <time class="text-body-secondary small" datetime="{{ c.created_at.isoformat() }}">{{ c.created_at|date }}</time>
-            </div>
-            <p class="mb-0 comment-body">{{ c.body }}</p>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p class="text-body-secondary mb-0">Aún no hay comentarios. ¡Sé el primero!</p>
-    {% endif %}
-  </div>
+  {% if summary.comments %}
+    {% for c in summary.comments %}
+      <article class="comment">
+        <div class="comment-avatar" aria-hidden="true">{{ c.author[:1] }}</div>
+        <div class="flex-grow-1">
+          <div class="d-flex justify-content-between flex-wrap gap-2">
+            <strong>{{ c.author }}</strong>
+            <time class="text-secondary small" datetime="{{ c.created_at.isoformat() }}">{{ c.created_at|date }}</time>
+          </div>
+          <p class="comment-body">{{ c.body }}</p>
+        </div>
+      </article>
+    {% endfor %}
+  {% else %}
+    <p class="text-secondary mb-0"><i class="bi bi-chat-square"></i> Aún no hay comentarios. ¡Sé el primero!</p>
+  {% endif %}
 </section>
 {% endblock %}
