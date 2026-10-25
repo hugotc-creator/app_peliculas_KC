@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app import core
 from app.dependencies import get_db, get_omdb
-from app.models import Movie
+from app.models import Pelicula
 from app.repositories import MovieRepository
 from app.services.omdb import OmdbClient
 from app.views import render
@@ -12,7 +12,7 @@ from app.views import render
 router = APIRouter(prefix="/movies")
 
 
-def load_movie(repo: MovieRepository, omdb: OmdbClient, imdb_id: str) -> tuple[Movie, str]:
+def load_movie(repo: MovieRepository, omdb: OmdbClient, imdb_id: str) -> tuple[Pelicula, str]:
     """Primero nuestra base; si no está, se trae de OMDb y se guarda (el catálogo se llena solo)."""
     movie = repo.get(imdb_id)
     if movie:
@@ -37,7 +37,7 @@ def render_detail(request, repo, movie, source, *, status_code=200, **extra):
     )
 
 
-def saved_movie_or_404(repo: MovieRepository, imdb_id: str) -> Movie:
+def saved_movie_or_404(repo: MovieRepository, imdb_id: str) -> Pelicula:
     movie = repo.get(imdb_id)
     if not movie:
         raise HTTPException(404, "Esa película no está en el catálogo.")

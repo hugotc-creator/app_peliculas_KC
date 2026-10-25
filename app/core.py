@@ -1,6 +1,7 @@
 """Funciones puras: sin base de datos, sin red, sin HTTP. Todo lo fácil de probar vive aquí."""
 from __future__ import annotations
 
+import html
 import math
 
 PAGE_SIZE = 10  # OMDb devuelve 10 resultados por página; el catálogo usa el mismo tamaño
@@ -24,8 +25,14 @@ _STAR_KIND = {0.0: "empty", 0.5: "half", 1.0: "full"}
 
 # ---------- utilidades ----------
 def clean(value):
-    """OMDb usa 'N/A' para lo que no tiene: se convierte en None."""
-    return None if value in (None, "", NOT_AVAILABLE) else value
+    """OMDb usa 'N/A' para lo que no tiene: se convierte en None.
+
+    Algunos textos llegan con entidades HTML (&quot;Batman&quot;): se decodifican aquí,
+    y la vista los escapa de nuevo al mostrarlos.
+    """
+    if value in (None, "", NOT_AVAILABLE):
+        return None
+    return html.unescape(value) if isinstance(value, str) else value
 
 
 def normalize_page(page) -> int:
@@ -45,7 +52,7 @@ def page_offset(page) -> int:
 
 # ---------- OMDb -> datos de la app ----------
 def summary_from_omdb(m: dict) -> dict:
-    return {"id": m["imdbID"], "title": m["Title"], "year": clean(m.get("Year")), "poster": clean(m.get("Poster"))}
+    return {"id": m["imdbID"], "title": clean(m["Title"]) or "", "year": clean(m.get("Year")), "poster": clean(m.get("Poster"))}
 
 
 def detail_from_omdb(m: dict) -> dict:

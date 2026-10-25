@@ -51,7 +51,7 @@ def main(url: str, anon_key: str) -> None:
     skipped = 0
     for row in fetch_all(http, "comments", "imdb_id,author,body,created_at"):
         movie = repo.get(row["imdb_id"])
-        if movie is None or any(c.body == row["body"] and c.author == row["author"] for c in movie.comments):
+        if movie is None or any(c.comentario == row["body"] and c.persona == row["author"] for c in movie.comentarios):
             skipped += 1
             continue
         repo.add_comment(movie, row["author"], row["body"], created_at=parse_date(row["created_at"]))
@@ -61,7 +61,7 @@ def main(url: str, anon_key: str) -> None:
     for row in fetch_all(http, "ratings", "imdb_id,value,created_at"):
         movie = repo.get(row["imdb_id"])
         created = parse_date(row["created_at"])
-        if movie is None or any(r.created_at == created for r in movie.ratings):
+        if movie is None or any(r.fecha == created for r in movie.calificaciones):
             skipped += 1
             continue
         repo.add_rating(movie, int(row["value"]), created_at=created)

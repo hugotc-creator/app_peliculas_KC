@@ -3,5 +3,5 @@
 __pycache__/
 *.pyc
 .pytest_cache/
-*.db
 .vscode/
+# La base de datos peliculas.db SÍ se versiona: así el catálogo llega lleno al clonar el repositorio.

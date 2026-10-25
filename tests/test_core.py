@@ -7,6 +7,11 @@ def test_clean_converts_na_to_none():
     assert core.clean("x") == "x"
 
 
+def test_clean_decodes_html_entities_from_omdb():
+    assert core.clean("Episode 208: &quot;Batman&quot; (1989)") == 'Episode 208: "Batman" (1989)'
+    assert core.summary_from_omdb({"imdbID": "tt1", "Title": "Tom &amp; Jerry", "Year": "1999", "Poster": "N/A"})["title"] == "Tom & Jerry"
+
+
 def test_detail_from_omdb_drops_na_and_keeps_field_order():
     detail = core.detail_from_omdb({"imdbID": "tt1", "Title": "M", "Year": "1999", "Poster": "N/A",
                                     "Plot": "p", "Director": "D", "Writer": "N/A", "Genre": "G"})

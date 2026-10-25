@@ -102,13 +102,13 @@
   {% if summary.comments %}
     {% for c in summary.comments %}
       <article class="comment">
-        <div class="comment-avatar" aria-hidden="true">{{ c.author[:1] }}</div>
+        <div class="comment-avatar" aria-hidden="true">{{ c.persona[:1] }}</div>
         <div class="flex-grow-1">
           <div class="d-flex justify-content-between flex-wrap gap-2">
-            <strong>{{ c.author }}</strong>
-            <time class="text-secondary small" datetime="{{ c.created_at.isoformat() }}">{{ c.created_at|date }}</time>
+            <strong>{{ c.persona }}</strong>
+            <time class="text-secondary small" datetime="{{ c.fecha.isoformat() }}">{{ c.fecha|date }}</time>
           </div>
-          <p class="comment-body">{{ c.body }}</p>
+          <p class="comment-body">{{ c.comentario }}</p>
         </div>
       </article>
     {% endfor %}
